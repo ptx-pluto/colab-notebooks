@@ -6,10 +6,10 @@ q2 = Function('q_2')(t)
 dq1 = Function('\dot{q_1}')(t)
 dq2 = Function('\dot{q_2}')(t)
 
-x1 = l1 * cos(q1)
-y1 = -l1 * sin(q1)
-x2 = x1 + l2 * cos(q1 + q2)
-y2 = y1 - l2 * sin(q1 + q2)
+x1 = l1 * sin(q1)
+y1 = -l1 * cos(q1)
+x2 = x1 + l2 * sin(q1 + q2)
+y2 = y1 - l2 * cos(q1 + q2)
 
 # substitution rules
 rule = [(q1.diff(t), dq1), (q2.diff(t), dq2), (dq1.diff(t), ddq1), (dq2.diff(t), ddq2)]
