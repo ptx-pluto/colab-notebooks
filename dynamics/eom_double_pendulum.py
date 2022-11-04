@@ -1,5 +1,7 @@
 from sympy import *
 
+print('Performing symbolic derivation of the equations of motion of a double pendulum...')
+
 t, g, l1, l2, m1, m2, ddq1, ddq2 = symbols('t g l_1 l_2 m_1 m_2 \ddot{q_1} \ddot{q_2}')
 q1 = Function('q_1')(t)
 q2 = Function('q_2')(t)
@@ -65,3 +67,5 @@ eom_rhs = ImmutableMatrix([
     sol_ddq1.subs(rules_eom),
     sol_ddq2.subs(rules_eom)
 ])
+
+print('Derivation Complete')
