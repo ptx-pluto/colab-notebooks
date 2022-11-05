@@ -29,19 +29,24 @@ class PlottableSystem(DynamicSystem):
         assert (ydim == self.ydim)
         return np.array([self.y2pt(vy[i, :]) for i in range(t)])
 
-    def plot(self, vy, fps: int, filename=None):
-        anim = self.animate(vy, fps)
+    def plot(self, vy, fps: int, legend=None, filename=None):
+        anim = self.animate(vy, fps, legend)
         if filename is not None:
             anim.save(filename, writer=animation.FFMpegWriter(fps=fps))
             return Video(filename, embed=True)
         else:
             return HTML(anim.to_jshtml())
 
-    def animate(self, vy, fps: int) -> animation.FuncAnimation:
+    def animate(self, vy, fps: int, legend) -> animation.FuncAnimation:
         if type(vy) == np.ndarray:
             vy = [vy, ]
         T, ydim = vy[0].shape
         assert (ydim == self.ydim)
+
+        if type(legend) == str:
+            legend = [legend, ]
+
+        assert (legend is None or len(legend) == len(vy))
 
         trajs = [self.vy2vpt(traj) for traj in vy]
 
@@ -64,6 +69,11 @@ class PlottableSystem(DynamicSystem):
         )
 
         lines = [ax.plot([], [], lw=1, marker="o")[0] for i in trajs]
+
+        if legend is not None:
+            for i, line in enumerate(lines):
+                line.set_label(legend[i])
+            ax.legend(loc='upper right')
 
         # initialization function: plot the background of each frame
         def init():
