@@ -3,8 +3,7 @@ from abc import abstractmethod
 import matplotlib.pyplot as plt
 from matplotlib import animation
 from IPython.display import HTML, Video
-
-from .dynamic_system import DynamicSystem
+from dynamics.dynamic_system import DynamicSystem
 
 
 class PlottableSystem(DynamicSystem):
@@ -40,7 +39,7 @@ class PlottableSystem(DynamicSystem):
     def animate(self, vy, fps: int, legend) -> animation.FuncAnimation:
         if type(vy) == np.ndarray:
             vy = [vy, ]
-        T, ydim = vy[0].shape
+        tspan, ydim = vy[0].shape
         assert (ydim == self.ydim)
 
         if type(legend) == str:
@@ -83,10 +82,10 @@ class PlottableSystem(DynamicSystem):
 
         # animation function. This is called sequentially
         def animate(t):
-            timestamp.set_text('t=%.2fs' % (t / fps))
             for idx, line in enumerate(lines):
                 pts = trajs[idx][t, :]
                 line.set_data(pts[:, 0], pts[:, 1])
+            timestamp.set_text('t=%.2fs' % (t/fps))
             return lines + [timestamp, ]
 
         # call the animator. blit=True means only re-draw the parts that have changed.
@@ -94,8 +93,8 @@ class PlottableSystem(DynamicSystem):
             fig,
             animate,
             init_func=init,
-            frames=T,
-            interval=1000 / fps,
+            frames=tspan,
+            interval=1000/fps,
             blit=True
         )
 

@@ -14,14 +14,14 @@ class DoublePendulum(PlottableSystem):
         self.m2 = m2
         self.g = 9.8
         self.theta = np.array([[self.m1, self.m2, self.l1, self.l2, self.g]]).T
-        self.f = lambdify([eom.theta, eom.y], eom.eom_rhs)
-        self.x1 = lambdify([eom.theta, eom.y], eom.x1.subs(eom.rules_eom))
-        self.y1 = lambdify([eom.theta, eom.y], eom.y1.subs(eom.rules_eom))
-        self.x2 = lambdify([eom.theta, eom.y], eom.x2.subs(eom.rules_eom))
-        self.y2 = lambdify([eom.theta, eom.y], eom.y2.subs(eom.rules_eom))
+        self.f = lambdify([eom.theta, eom.y], eom.y_dot)
+        self.x1 = lambdify([eom.theta, eom.y], eom.x1.subs(eom.rules))
+        self.y1 = lambdify([eom.theta, eom.y], eom.y1.subs(eom.rules))
+        self.x2 = lambdify([eom.theta, eom.y], eom.x2.subs(eom.rules))
+        self.y2 = lambdify([eom.theta, eom.y], eom.y2.subs(eom.rules))
 
     def eom(self, t, y):
-        return self.f(self.theta, y.reshape(4, 1)).reshape(4, )
+        return self.f(self.theta, y.reshape(self.ydim, 1)).reshape(self.ydim, )
 
     @property
     def title(self):
