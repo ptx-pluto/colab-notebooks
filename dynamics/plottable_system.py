@@ -2,12 +2,17 @@ import numpy as np
 from abc import abstractmethod
 import matplotlib.pyplot as plt
 from matplotlib import animation
-from IPython.display import HTML
+from IPython.display import HTML, Video
 
 from .dynamic_system import DynamicSystem
 
 
 class PlottableSystem(DynamicSystem):
+
+    @property
+    @abstractmethod
+    def title(self) -> str:
+        pass
 
     @property
     @abstractmethod
@@ -28,7 +33,9 @@ class PlottableSystem(DynamicSystem):
         anim = self.animate(vy, fps)
         if filename is not None:
             anim.save(filename, writer=animation.FFMpegWriter(fps=fps))
-        return HTML(anim.to_jshtml())
+            return Video(filename, embed=True)
+        else:
+            return HTML(anim.to_jshtml())
 
     def animate(self, vy, fps: int) -> animation.FuncAnimation:
         if type(vy) == np.ndarray:
@@ -42,10 +49,19 @@ class PlottableSystem(DynamicSystem):
         fig, ax = plt.subplots()
 
         xmin, xmax, ymin, ymax = self.bounding_box
+        plt_width = xmax - xmin
+        plt_height = ymax - ymin
+        ratio = 0.1
 
         ax.set_aspect('equal')
         ax.set_xlim((xmin, xmax))
         ax.set_ylim((ymin, ymax))
+        ax.set_title(self.title)
+        timestamp = ax.text(
+            xmax - plt_width * ratio,
+            ymax - plt_height * ratio,
+            't=0s'
+        )
 
         lines = [ax.plot([], [], lw=1, marker="o")[0] for i in trajs]
 
@@ -53,14 +69,15 @@ class PlottableSystem(DynamicSystem):
         def init():
             for line in lines:
                 line.set_data([], [])
-                return lines
+                return lines + [timestamp, ]
 
         # animation function. This is called sequentially
         def animate(t):
+            timestamp.set_text('t=%.2fs' % (t / fps))
             for idx, line in enumerate(lines):
                 pts = trajs[idx][t, :]
                 line.set_data(pts[:, 0], pts[:, 1])
-            return lines
+            return lines + [timestamp, ]
 
         # call the animator. blit=True means only re-draw the parts that have changed.
         anim = animation.FuncAnimation(

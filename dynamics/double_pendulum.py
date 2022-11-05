@@ -24,6 +24,10 @@ class DoublePendulum(PlottableSystem):
         return self.f(self.theta, y.reshape(4, 1)).reshape(4, )
 
     @property
+    def title(self):
+        return 'Double Pendulum'
+
+    @property
     def bounding_box(self):
         padding_ratio = 1.2
         radius = self.l1 + self.l2
