@@ -58,7 +58,7 @@ class PlottableSystem(DynamicSystem):
         ax.set_ylim((ymin, ymax))
         ax.set_title(self.title)
         timestamp = ax.text(
-            xmax - plt_width * ratio,
+            xmin + plt_width * ratio,
             ymax - plt_height * ratio,
             't=0s'
         )
